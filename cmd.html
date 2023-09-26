@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>123.0.0.1</title>
+    <link rel="stylesheet" href="../styles/cmd.css">
+    <style>
+
+       *{
+         color:green;
+}
+        /* Add any additional CSS styles here if needed */
+        .command-output {
+            color:green;
+            font-family: monospace;
+        }
+
+        /* Style the input container to be to the right of the prompt */
+        #cmd-input-container {
+            color:green;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Style the prompt */
+        color:green;
+        .user-input {
+            flex: 0 0 auto; /* Prevent the prompt from growing */
+        }
+
+        /* Style the input field */
+        .cmd-input {
+        color:green;
+            flex-grow: 1; /* Allow the input field to expand */
+        }
+    </style>
+</head>
+<body>
+    <div class="wina">
+        <div class="win">
+            <div class="close">+</div>
+            <div class="winc">
+                <div class="home">
+                    <center>
+                        <br><br><br>
+                        <img src="../img/cm1.jpg" class="p1"/>
+                        <img src="../img/cm2.jpg" class="p2"/>
+                        <img src="../img/cm3.jpg" class="p3"/>
+                        <img src="../img/cm4.jpg" class="p4"/>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="B1" id="help">HELP</button>
+    <div class="screen">
+        <a href="../h5.html"><img src="../img/s9.png" class="c" /><br></a>
+        <div class="op"> 
+            <a href=""><img src="../img/s1.png" onclick="alert('Option Denied!')" class="a" /></a>
+            <a href=""><img src="../img/s3.png" class="b" /></a><br>
+            <a href=""><img src="../img/s2.png" onclick="alert('Option Denied!')" class="a" /></a>
+            <a href=""><img src="../img/s4.png" onclick="alert('Option Denied!')" class="b" /></a>
+        </div>
+        <div class="cmd" id="draggable-cmd">
+            <div class="title">
+                <img src="../img/cmdlg.png" class="m" width="25" height="20" >
+                <span>C:\Windows\system32\cmd.exe</span>
+                <a href="../h5.html"><button class="bt"><img src="../img/exit.png"/></button></a>
+            </div>
+            <p>Microsoft Windows [Version 10.0.10586]<br>
+            (c) 2015 Microsoft Corporation. All rights reserved.</p>
+            <div id="output-container"></div> <!-- Container to display command output -->
+            <div id="cmd-input-container">
+                <span class="user-input">C:\Windows\system32> </span>
+                <input class="cmd-input" type="text" autofocus id="user-command" onkeydown="executeCommand(event)">
+            </div>
+        </div>
+
+        <!-- Context menu for the navigation bar -->
+        <div class="context-menu" id="context-menu">
+            <ul>
+                <li><a href="#">Restore</a></li>
+                <li><a href="#">Move</a></li>
+                <li><a href="#">Size</a></li>
+                <li><a href="#">Minimize</a></li>
+                <li><a href="#">Maximize</a></li>
+                <li><a href="#">Close</a></li>
+                <li><a href="#">Edit</a></li>
+                <li><a href="#">Defaults</a></li>
+                <li><a href="#">Properties</a></li>
+            </ul>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var cmd = document.getElementById('draggable-cmd'); // Get the CMD section element
+        var isDragging = false;
+        var offsetX, offsetY;
+
+        // Function to start dragging
+        cmd.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            offsetX = e.clientX - cmd.getBoundingClientRect().left;
+            offsetY = e.clientY - cmd.getBoundingClientRect().top;
+            cmd.style.zIndex = '9999'; // Bring CMD section to the front
+            e.preventDefault(); // Prevent text selection during dragging
+        });
+
+        // Function to stop dragging
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            cmd.style.zIndex = ''; // Restore default z-index
+        });
+
+        // Function to move the CMD section while dragging
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                cmd.style.left = e.clientX - offsetX + 'px';
+                cmd.style.top = e.clientY - offsetY + 'px';
+            }
+        });
+
+        // Function to execute user commands
+        function executeCommand(event) {
+            if (event.key === "Enter") {
+                const commandInput = document.getElementById('user-command');
+                const userInput = commandInput.value.trim(); // Remove leading/trailing spaces
+                const outputContainer = document.getElementById('output-container');
+                
+                // Create a new output container for the command
+                const newOutputContainer = document.createElement('div');
+                newOutputContainer.className = 'command-output-container';
+
+                // Create a new output div for the command
+                const newOutput = document.createElement('div');
+                newOutput.className = 'command-output';
+
+                if (userInput === "") {
+                    // If the user input is empty, just add a new empty line
+                    newOutput.innerHTML = "<br>";
+                } else if (userInput.toLowerCase() === "ipconfig") {
+                    // Implement the 'ipconfig' command
+                    newOutput.textContent = "IP Configuration for your system...";
+                    // You can add more details here if needed
+                } else if (userInput.toLowerCase() === "ls" || userInput.toLowerCase() === "dir") {
+                    // Implement 'ls' or 'dir' command (list files in a directory)
+                    // For simplicity, let's assume you're listing some example files
+                    const fileList = ["file1.txt", "file2.txt", "folder1", "folder2"];
+                    newOutput.textContent = fileList.join('\n');
+                } else {
+                    // Command not recognized
+                    newOutput.textContent = "Command not recognized: " + userInput;
+                }
+
+                // Append the output to the new output container
+                newOutputContainer.appendChild(newOutput);
+                
+                // Append the new output container to the main output container
+                outputContainer.appendChild(newOutputContainer);
+
+                // Clear the input field
+                commandInput.value = '';
+                
+                // Scroll to the bottom of the console
+                outputContainer.scrollTop = outputContainer.scrollHeight;
+                
+                // Move the input field to the bottom of the output
+                outputContainer.appendChild(commandInput);
+                
+                // Autofocus on the input field for the next command
+                commandInput.focus();
+            }
+        }
+
+        // JavaScript code to show the context menu when the right mouse button is clicked
+        const contextMenu = document.getElementById('context-menu');
+
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = (event.clientX + 'px');
+            contextMenu.style.top = (event.clientY + 'px');
+        });
+
+        document.addEventListener('click', function () {
+            contextMenu.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
